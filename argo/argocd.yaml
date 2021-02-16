@@ -1,0 +1,8 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  name: myargocd
+spec:
+  server:
+    route:
+      enabled: true

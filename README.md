@@ -8,6 +8,7 @@ This repository contains a brief Getting Started guide for trying out OpenShift 
 * [Log into Argo CD dashboard](#log-into-argo-cd-dashboard)
 * [Configure OpenShift with Argo CD](#configure-openshift-with-argo-cd)
 * [Deploy Applications with Argo CD](#deploy-applications-with-argo-cd)
+* [Additional Argo CD instances](#additional-argo-cd-instances)
 
 ## Install OpenShift GitOps 
 
@@ -140,3 +141,42 @@ You would notice that the deployment momentarily scales up to 2 pods and immedia
 In Argo CD dashboard, click on the **app-spring-petclinic** and then **App Details** &rarr; **Events**. You can see the event details of Argo CD detecting that the deployment resources is out of sync on the cluster and resyncing the Git repository to correct it.
 
 ![Argo CD - Events](images/gitops-13.png)
+
+
+## Additional Argo CD instances
+
+Although OpenShift GitOps by default installs an Argo CD instance for the cluster, there are use-cases where different application teams might need their own Argo CD instance confined to their own namespaces and applications. Therefore, OpenShift GitOps support creating additional Argo CD instances declaratively through creating `ArgoCD` resources. 
+
+In the OpenShift Web Console, create a project called `myargocd` and then click on the plus sign in the top navigation bar to then paste the following in the YAML editor, and then click on **Create**.
+
+```
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  name: myargocd
+spec:
+  server:
+    route:
+      enabled: true
+```
+
+![Argo CD](images/gitops-16.png)
+
+> Alternatively, you can run the following CLI commands:
+> ```
+> oc new-project myargocd
+> oc create -f argo/argocd.yaml
+> ```
+
+Click on the **Topology** to view the Argo CD instance deployed in your names.
+
+![Argo CD](images/gitops-17.png)
+
+Click on the Argo CD URL to open the Argo CD dashboard. 
+
+As described previously, Argo CD upon installation generates an initial admin password which is stored in a Kubernetes secret called `[argocd-name]-cluster`. Run the following command to decrypt the `admin` password and log into Argo CD dashboard:
+
+```
+kubectl get secret myargocd-cluster -n myargocd -ojsonpath='{.data.admin\.password}' | base64 -d
+```
+
