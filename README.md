@@ -117,6 +117,8 @@ Create a new Argo CD application by clicking on the **New App** button in the Ar
 
 As soon as the Argo CD application is created, a sync is started in order to rollout the Spring PetClinic manifests to the `spring-petclinic` namespace.
 
+![Argo CD - Spring PetClinic](images/gitops-15.png)
+
 Click on the **app-spring-petclinic** in the Argo CD dashboard to view the application resources that are deployed to the cluster.
 
 ![Argo CD - Spring PetClinic](images/gitops-14.png)
