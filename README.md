@@ -117,9 +117,13 @@ Create a new Argo CD application by clicking on the **New App** button in the Ar
 
 As soon as the Argo CD application is created, a sync is started in order to rollout the Spring PetClinic manifests to the `spring-petclinic` namespace.
 
+Click on the **app-spring-petclinic** in the Argo CD dashboard to view the application resources that are deployed to the cluster.
+
+![Argo CD - Spring PetClinic](images/gitops-14.png)
+
 In the OpenShift Web Console, go to the **Developer** perspective to review the deployed application. 
 
-![Spring PetClinic](images/gitops-12.png)
+![OpenShift - Spring PetClinic](images/gitops-12.png)
 
 In oder to modify the Spring PetClinic deployment, all the user needs to do is to commit the changes to the [app](app/) directory of the Git repository and the changes would automatically get deployed to the cluster. 
 
