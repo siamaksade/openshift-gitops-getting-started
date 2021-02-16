@@ -1,5 +1,14 @@
 # Getting Started with OpenShift GitOps
 
+OpenShift GitOps is an add-on on OpenShift which provides Argo CD and other tooling to enable teams to implement GitOps workflows for cluster configuration and application delivery. OpenShift GitOps provides [Argo CD](https://argo-cd.readthedocs.io/en/stable/) as the core of the GitOps workflow and [GitOps Application Manager CLI](https://github.com/redhat-developer/kam) in order to help developers bootstrap a GitOps workflow for delivering applications.
+
+This repository contains a brief Getting Started guide for trying out OpenShift GitOps.
+
+* [Install OpenShift GitOps](#install-openshift-gitops)
+* [Log into Argo CD dashboard](#log-into-argo-cd-dashboard)
+* [Configure OpenShift with Argo CD](#configure-openshift-with-argo-cd)
+* [Deploy Applications with Argo CD](#deploy-applications-with-argo-cd)
+
 ## Install OpenShift GitOps 
 
 Log into OpenShift Web Console as a cluster admin and navigate to the **Administrator** perspective and then **Operators** &rarr; **OperatorHub**. 
@@ -12,11 +21,11 @@ In the **OperatorHub**, search for *OpenShift GitOps* and follow the operator in
 
 ![OpenShift GitOps operator](images/gitops-03.png)
 
-Once OpenShift GitOps is installed, an instance of [Argo CD](https://argo-cd.readthedocs.io/en/stable/) is automatically installed on the cluster in the `openshift-gitops` namespace and link to this instance is added to the application launcher in OpenShift Web Console.
+Once OpenShift GitOps is installed, an instance of Argo CD is automatically installed on the cluster in the `openshift-gitops` namespace and link to this instance is added to the application launcher in OpenShift Web Console.
 
 ![Application Launcher](images/gitops-04.png)
 
-## Accessing Argo CD
+## Log into Argo CD dashboard
 
 Argo CD upon installation generates an initial admin password which is stored in a Kubernetes secret. In order to retrieve this password, run the following command to decrypt the admin password:
 
@@ -31,7 +40,7 @@ Click on Argo CD from the OpenShift Web Console application launcher and then lo
 ![Argo CD](images/gitops-06.png)
 
 
-## Configure OpenShift with GitOps
+## Configure OpenShift with Argo CD
 
 In current Git repository, the [cluster](cluster/) directory contains OpenShift cluster configurations such as an OpenShift Web Console customization as well namespaces that should be created. Let's configure Argo CD to recursively sync the content of the [cluster](cluster/) directory to the OpenShift cluster. Initially, we can ask set the sync policy to manual in order to be able to review changes before rolling out configurations to the cluster. 
 
@@ -80,7 +89,7 @@ You an also check that a namespace called `spring-petclinic` is created on the  
 
 Now that the configuration sync is in place, any changes in the Git repository will be automatically detect by Argo CD and would change the status of the **cluster-configs** to `OutOfSync` which implies a drift from the desired configuration. One can set the [sync policy to automated](https://argoproj.github.io/argo-cd/user-guide/auto_sync/) in order for Argo CD to automatically roll out changes form Git repository to the cluster. 
 
-## Deploy Applications with GitOps
+## Deploy Applications with Argo CD
 
 In addition to configuring OpenShift clusters, many teams use GitOps workflows for continuous delivery and deploying applications in multi-cluster Kubernetes environments.
 
