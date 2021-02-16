@@ -92,7 +92,6 @@ Create a new Argo CD application by clicking on the **New App** button in the Ar
 * Project: `default`
 * Sync Policy: `Automatic`
 * Self-heal: `checked`
-* Auto-create namespace: `checked`
 * Repository URL: `https://github.com/siamaksade/openshift-gitops-getting-started`
 * Revision: `HEAD`
 * Path: `app`
