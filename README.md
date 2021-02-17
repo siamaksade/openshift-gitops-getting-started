@@ -43,7 +43,7 @@ Click on Argo CD from the OpenShift Web Console application launcher and then lo
 
 ## Configure OpenShift with Argo CD
 
-In current Git repository, the [cluster](cluster/) directory contains OpenShift cluster configurations such as an OpenShift Web Console customization as well namespaces that should be created. Let's configure Argo CD to recursively sync the content of the [cluster](cluster/) directory to the OpenShift cluster. Initially, we can ask set the sync policy to manual in order to be able to review changes before rolling out configurations to the cluster. 
+In the current Git repository, the [cluster](cluster/) directory contains OpenShift cluster configurations such as an OpenShift Web Console customization as well as namespaces that should be created. Let's configure Argo CD to recursively sync the content of the [cluster](cluster/) directory to the OpenShift cluster. Initially, we can set the sync policy to manual in order to be able to review changes before rolling out configurations to the cluster. 
 
 In the Argo CD dashboard, click on the **New App** button to add a new Argo CD application that syncs a Git repository containing cluster configurations with the OpenShift cluster.
 
@@ -86,9 +86,9 @@ Now go back to the OpenShift Web Console and click on the **Application Launcher
 
 ![Argo CD - Cluster Config](images/gitops-11.png)
 
-You an also check that a namespace called `spring-petclinic` is created on the  cluster.
+You can also check that a namespace called `spring-petclinic` is created on the cluster.
 
-Now that the configuration sync is in place, any changes in the Git repository will be automatically detect by Argo CD and would change the status of the **cluster-configs** to `OutOfSync` which implies a drift from the desired configuration. One can set the [sync policy to automated](https://argoproj.github.io/argo-cd/user-guide/auto_sync/) in order for Argo CD to automatically roll out changes form Git repository to the cluster. 
+Now that the configuration sync is in place, any changes in the Git repository will be automatically detect by Argo CD and would change the status of the **cluster-configs** to `OutOfSync`, which implies a drift from the desired configuration. One can set the [sync policy to automated](https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/) in order for Argo CD to automatically roll out changes form Git repository to the cluster. 
 
 ## Deploy Applications with Argo CD
 
@@ -116,7 +116,7 @@ Create a new Argo CD application by clicking on the **New App** button in the Ar
 >  oc create -f argo/app.yaml
 >  ```
 
-As soon as the Argo CD application is created, a sync is started in order to rollout the Spring PetClinic manifests to the `spring-petclinic` namespace.
+Because we set up the sync policy to `Automatic`, as soon as the Argo CD application is created, a sync is started in order to rollout the Spring PetClinic manifests to the `spring-petclinic` namespace.
 
 ![Argo CD - Spring PetClinic](images/gitops-15.png)
 
@@ -136,7 +136,7 @@ In addition, Argo CD constantly monitors the state of the deployed applications 
 oc scale deployment spring-petclinic --replicas 2  -n spring-petclinic
 ```
 
-You would notice that the deployment momentarily scales up to 2 pods and immediately scales down again to 1 pod as Argo CD detects a drift from the Git repository and auto-heals the application on the OpenShift cluster.
+You would notice that the deployment momentarily scales up to 2 pods and immediately scales down again to 1 pod as Argo CD detects a drift from the Git repository and auto-heals the application on the OpenShift cluster. This behavior can be controlled by the [Self-heal](https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/#automatic-self-healing) setting.
 
 In Argo CD dashboard, click on the **app-spring-petclinic** and then **App Details** &rarr; **Events**. You can see the event details of Argo CD detecting that the deployment resources is out of sync on the cluster and resyncing the Git repository to correct it.
 
@@ -147,7 +147,7 @@ In Argo CD dashboard, click on the **app-spring-petclinic** and then **App Detai
 
 Although OpenShift GitOps by default installs an Argo CD instance for the cluster, there are use-cases where different application teams might need their own Argo CD instance confined to their own namespaces and applications. Therefore, OpenShift GitOps support creating additional Argo CD instances declaratively through creating `ArgoCD` resources. 
 
-In the OpenShift Web Console, create a project called `myargocd` and then click on the plus sign in the top navigation bar to then paste the following in the YAML editor, and then click on **Create**.
+In the OpenShift Web Console, create a project called `myargocd` and then click on the plus sign in the top navigation bar. Then, paste the following in the YAML editor, and click on **Create** afterwards:
 
 ```
 apiVersion: argoproj.io/v1alpha1
@@ -168,7 +168,7 @@ spec:
 > oc create -f argo/argocd.yaml
 > ```
 
-Click on the **Topology** to view the Argo CD instance deployed in your names.
+Click on the **Topology** to view the Argo CD instance deployed in your namespace.
 
 ![Argo CD](images/gitops-17.png)
 
