@@ -31,7 +31,7 @@ Once OpenShift GitOps is installed, an instance of Argo CD is automatically inst
 Argo CD upon installation generates an initial admin password which is stored in a Kubernetes secret. In order to retrieve this password, run the following command to decrypt the admin password:
 
 ```
-oc extract secret/argocd-cluster-cluster -n openshift-gitops --to=-
+oc extract secret/openshift-gitops-cluster -n openshift-gitops --to=-
 ```
 
 Click on Argo CD from the OpenShift Web Console application launcher and then log into Argo CD with `admin` username and the password retrieved from the previous step.
