@@ -174,9 +174,9 @@ Click on the **Topology** to view the Argo CD instance deployed in your namespac
 
 Click on the Argo CD URL to open the Argo CD dashboard. 
 
-As described previously, Argo CD upon installation generates an initial admin password which is stored in a Kubernetes secret called `[argocd-name]-cluster`. Run the following command to decrypt the `admin` password and log into Argo CD dashboard:
+As described previously, Argo CD upon installation generates an initial admin password which is stored in a Kubernetes secret called `argocd-cluster`. Run the following command to decrypt the `admin` password and log into Argo CD dashboard:
 
 ```
-oc get secret myargocd-cluster -n myargocd -ojsonpath='{.data.admin\.password}' | base64 -d
+oc get secret argocd-cluster -n myargocd -ojsonpath='{.data.admin\.password}' | base64 -d
 ```
 
