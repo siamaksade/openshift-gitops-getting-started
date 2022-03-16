@@ -45,12 +45,13 @@ Click on Argo CD from the OpenShift Web Console application launcher and then lo
 
 In the current Git repository, the [cluster](cluster/) directory contains OpenShift cluster configurations such as an OpenShift Web Console customization as well as namespaces that should be created. Let's configure Argo CD to recursively sync the content of the [cluster](cluster/) directory to the OpenShift cluster. Initially, we can set the sync policy to manual in order to be able to review changes before rolling out configurations to the cluster. 
 
-Before we create an application which will be able to properly sync, we will need to modify the argocd-default-cluster-config secret to include the following key-value pair: clusterResources: true, which tells argocd that it's allowed to manage resources outside its own namespace. We will also need to include an environment variable for the operator subscription to give our ArgoCD deployment visibility to resources outside of the openshift-operators namespace. 
-
+Before we create an application which will be able to properly sync, we will need to modify the argocd-default-cluster-config secret to include the following key-value pair: ```clusterResources: true```, which tells argocd that it's allowed to manage resources outside its own namespace. 
 ![Argo CD](https://user-images.githubusercontent.com/3875338/144000902-850e8115-489f-4101-939c-324fd737a65f.png)
 
+We will also need to include an environment variable for the operator subscription to give our ArgoCD deployment visibility to resources outside of the openshift-operators namespace. This can be accomplished by either navigating to Installed Operators > Openshift GitOps > Subscription > Actions > Edit Subscription to edit the subscription yaml to include the environment variable within the Openshift web console or directly via the command line.
+
 ```
-$ > oc get subscriptions.operators.coreos.com argocd-operator 
+$ > oc edit subscriptions.operators.coreos.com argocd-operator 
 
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
@@ -67,7 +68,7 @@ spec:
         value: openshift-operators
 ```
 
-In the Argo CD dashboard, click on the **New App** button to add a new Argo CD application that syncs a Git repository containing cluster configurations with the OpenShift cluster.
+Once we have properly configured our ArgoCD deployment to be able to view and manage resources outside of the namespace it is deployed to, we'll begin to deploy ArgoCD managed applications. In the Argo CD dashboard, click on the **New App** button to add a new Argo CD application that syncs a Git repository containing cluster configurations with the OpenShift cluster.
 
 Enter the following details and click on **Create**.
 
