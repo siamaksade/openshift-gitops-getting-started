@@ -147,6 +147,12 @@ Create a new Argo CD application by clicking on the **New App** button in the Ar
 >  oc create -f argo/app.yaml
 >  ```
 
+You will notice that your app will be created but not successfully sync. This is because you must first allow the openshift-gitops namespace to manage the spring-petclinic namespace by running the following command:
+
+```
+oc label namespace spring-petclinic argocd.argoproj.io/managed-by=openshift-gitops
+```
+
 Because we set up the sync policy to `Automatic`, as soon as the Argo CD application is created, a sync is started in order to rollout the Spring PetClinic manifests to the `spring-petclinic` namespace.
 
 ![Argo CD - Spring PetClinic](images/gitops-15.png)
