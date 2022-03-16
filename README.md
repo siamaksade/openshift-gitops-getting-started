@@ -45,7 +45,30 @@ Click on Argo CD from the OpenShift Web Console application launcher and then lo
 
 In the current Git repository, the [cluster](cluster/) directory contains OpenShift cluster configurations such as an OpenShift Web Console customization as well as namespaces that should be created. Let's configure Argo CD to recursively sync the content of the [cluster](cluster/) directory to the OpenShift cluster. Initially, we can set the sync policy to manual in order to be able to review changes before rolling out configurations to the cluster. 
 
-In the Argo CD dashboard, click on the **New App** button to add a new Argo CD application that syncs a Git repository containing cluster configurations with the OpenShift cluster.
+Before we create an application which will be able to properly sync, we will need to modify the argocd-default-cluster-config secret to include the following key-value pair: ```clusterResources: true```, which tells argocd that it's allowed to manage resources outside its own namespace. 
+![Argo CD](https://user-images.githubusercontent.com/3875338/144000902-850e8115-489f-4101-939c-324fd737a65f.png)
+
+We will also need to include an environment variable for the operator subscription to give our ArgoCD deployment visibility to resources outside of the ```openshift-operators``` namespace. This can be accomplished by either navigating to ```Installed Operators > Openshift GitOps > Subscription > Actions > Edit Subscription``` within the Openshift web console in order to edit the subscription yaml to include the environment variable. Alternatively, you can modify the Openshift GitOps operator subscription directly via the command line. 
+
+```
+$ > oc edit subscriptions.operators.coreos.com argocd-operator 
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: argocd
+  namespace: argocd
+...
+
+spec:
+  channel: preview
+  config:
+    env:
+      - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
+        value: openshift-operators
+```
+
+Once we have properly configured our ArgoCD deployment to be able to view and manage resources outside of the namespace it is deployed to, we'll begin to deploy our example applications to ArgoCD. In the Argo CD dashboard, click on the **New App** button to add a new Argo CD application that syncs a Git repository containing cluster configurations with the OpenShift cluster.
 
 Enter the following details and click on **Create**.
 
@@ -92,9 +115,17 @@ Now that the configuration sync is in place, any changes in the Git repository w
 
 ## Deploy Applications with Argo CD
 
-In addition to configuring OpenShift clusters, many teams use GitOps workflows for continuous delivery and deploying applications in multi-cluster Kubernetes environments.
+In addition to configuring OpenShift clusters, many teams use GitOps workflows for continuous delivery and deploying applications in multi-cluster Kubernetes environments. 
 
 The [app](app/) directory in the current Git repository contains the Kubernetes manifests using Kustomize for deploying the sample Spring PetClinic application. Let's configure Argo CD to automatically and recursively deploy any changes made to these manifests on the OpenShift cluster in the `spring-petclinic` namespace that was created by Argo CD in the previous step.
+
+We will need to grant RBAC permissions to the service account we created in our ArgoCD cluster-configs manifests: you can authorize your service account to perform either namespace-constrained or cluster-wide CRUD operations on Openshift resources via one of the following commands:
+
+```
+ oc adm policy add-role-to-user admin system:serviceaccount:openshift-operators:argocd-argocd-application-controller -n spring-petclinic
+ 
+ oc adm policy add-cluster-role-to-user cluster-admin system:serviceaccount:openshift-operators:argocd-argocd-application-controller
+```
 
 In the Argo CD dashboard, click on the **New App** button to add a new Argo CD application that syncs a Git repository containing cluster configurations with the OpenShift cluster.
 
@@ -115,6 +146,12 @@ Create a new Argo CD application by clicking on the **New App** button in the Ar
 >  ```
 >  oc create -f argo/app.yaml
 >  ```
+
+You will notice that your app will be created but not successfully sync. This is because you must first allow the openshift-gitops namespace to manage the spring-petclinic namespace by running the following command:
+
+```
+oc label namespace spring-petclinic argocd.argoproj.io/managed-by=openshift-gitops
+```
 
 Because we set up the sync policy to `Automatic`, as soon as the Argo CD application is created, a sync is started in order to rollout the Spring PetClinic manifests to the `spring-petclinic` namespace.
 
